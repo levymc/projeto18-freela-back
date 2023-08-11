@@ -6,10 +6,13 @@ export const userSchema = Joi.object({
     password: Joi.string().trim().required(),
     confirmPassword: Joi.string().trim().required().valid(Joi.ref('password')),
     cep: Joi.string().trim().required(),
-    numEnd: Joi.number().min(0).required(),
+    numEnd: Joi.string(),
     endereco: Joi.string().required(),
     permission: Joi.number().default(1),
-    createdAt: Joi.date().required(),
+    createdAt: Joi.date(),
+    bairro: Joi.string().required(),
+    cidade: Joi.string().required(),
+    estado: Joi.string().required(),
 });
   
 export const userLogin = Joi.object({

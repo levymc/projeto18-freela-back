@@ -3,40 +3,29 @@ import { crypt, compare } from "./crypt.js";
 import LinkDAO from "../prisma/dao/dao.links.js";
 import  { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
 
 const daoLink = new LinkDAO()
 const dao = new UsuarioDAO()
 
-export async function validadeEmail(req, res, next){
-    const email = req.body.email
-    try{
-        const user = await prisma.users.findUnique({
-            where: {
-              email: email,
-            },
-        })
-        console.log(user)
-        console.error("Erro validateEmail: ", err)
-        return res.status(500).send("Erro Validação de Email: ",err)
-        
-    }catch (err) {
-        next()
-    }
-}
+const prisma = new PrismaClient();
+
+
 
 export async function validateUserPass(req, res, next){
     const email = req.body.email
 
     try{
-        const dataRes = await dao.readByEmail(email) // validação do email
+        const dataRes = await prisma.users.findUnique({
+            where: {
+                email: email
+            }
+        }) // validação do email
         if (!dataRes || !compare(req.body.password, dataRes.password)) return res.status(401).send("Email ou Senha inválidos")
         res.userData = dataRes
-        console.log(dataRes)
         next()
     }catch (err) {
         console.error("Erro validateUserPass: ", err)
-        return res.status(500).send("Erro Validação de Usuario e Senha: ",err)
+        return res.status(500).send("Erro Validação de Email e Senha: ",err)
     }
 }
 

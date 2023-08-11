@@ -20,6 +20,24 @@ model categorias {
   servicos  servicos[]
 }
 
+model cidade {
+  id     Int     @id @default(autoincrement())
+  nome   String? @db.VarChar(120)
+  uf     Int?
+  estado estado? @relation(fields: [uf], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ufFk")
+  users  users[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model estado {
+  id     Int      @id @default(autoincrement())
+  nome   String?  @db.VarChar(60)
+  uf     String?  @db.VarChar(2)
+  ddd    Json?    @db.Json
+  cidade cidade[]
+  users  users[]
+}
+
 model servicos {
   id            Int             @id(map: "servicos_pk") @default(autoincrement())
   nome          Int
@@ -38,8 +56,9 @@ model servicos {
 model sessions {
   id        Int      @id(map: "sessions_pk") @default(autoincrement())
   userId    Int
-  token     String   @unique(map: "public.sessions_token_key") @db.Char(1)
+  token     String   @unique(map: "public.sessions_token_key") @db.VarChar
   createdAt DateTime @db.Timestamp(6)
+  valid     Boolean  @default(true)
   users     users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userFk")
 }
 
@@ -65,8 +84,13 @@ model users {
   permission                                     Int
   createdAt                                      DateTime        @db.Timestamp(6)
   numEnd                                         Int
+  bairro                                         String?         @db.VarChar
+  cidadeId                                       Int
+  estadoId                                       Int
   servicos                                       servicos[]
   sessions                                       sessions[]
   statusServico_statusServico_clienteIdTousers   statusServico[] @relation("statusServico_clienteIdTousers")
   statusServico_statusServico_prestadorIdTousers statusServico[] @relation("statusServico_prestadorIdTousers")
+  cidade                                         cidade          @relation(fields: [cidadeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cidadeId FK")
+  estado                                         estado          @relation(fields: [estadoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "estadoId FK")
 }

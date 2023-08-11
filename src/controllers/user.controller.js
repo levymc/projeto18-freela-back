@@ -1,28 +1,46 @@
 import UsuarioDAO from "../prisma/dao/dao.users.js";
-import LogAccessDAO from "../prisma/dao/dao.logAccess.js";
 import { crypt } from "../middlewares/crypt.js";
 import { format, addDays } from 'date-fns';
-import UsuarioService from "../prisma/orm/orm.users.js";
+import  { PrismaClient } from '@prisma/client';
 
-const orm = new UsuarioService();
+const prisma = new PrismaClient()
 
 const dao = new UsuarioDAO()
-const daoLog = new LogAccessDAO()
 
 export async function signUp(req, res){
-    try{
-        const newData = {
+    try{              
+        const cidade = await prisma.cidade.findFirst({
+            where: {
+                nome: req.body.cidade
+            }
+        });
+        
+        const estado = await prisma.estado.findFirst({
+            where: {
+                uf: 'SP'
+            }
+        })
+        if (!cidade || !estado) {
+            return res.status(404).send("Cidade ou estado não encontrados ");
+        }
+
+        const data = {
             nome: req.body.nome,
             email: req.body.email,
             password: crypt(req.body.password),
             endereco: req.body.endereco,
             cep: req.body.cep,
             permission: 1,
-            createdAt: new Date()
-        }
+            createdAt: new Date(),
+            numEnd: parseInt(req.body.numEnd),
+            bairro: req.body.bairro,
+            cidadeId: cidade.id,
+            estadoId: estado.id,
+        }  
+        const dataRes = await prisma.users.create({data})
 
-        const dataRes = await orm.createUser(newData)
         console.log(`Cadastro do ${req.body.nome} realizado com sucesso !`)
+        if (!dataRes) return res.status(404).send("Ocorreu algum erro no cadastro.")
         res.status(201).send(dataRes)
     }catch (err) {
         console.error("Erro signUp: ", err)
@@ -34,14 +52,15 @@ export async function signIn(req, res){
     const data = {
         userId: res.userData.id,
         token: res.token,
-        createdAt: format(new Date(), 'yyyy-MM-dd HH:MM:ss'),
+        createdAt: new Date(),
         valid: true
     }
+    console.log("DATA: ", data)
     try{
-        const dataRes = await daoLog.create(data)
-        console.log(`Login do ${res.userData.name} realizado com sucesso !`)
-        await daoLog.desativaOutrosAccess(res.userData.id) // desativando outros tokens
-        res.send({token: res.token}).status(200)
+        const dataRes = await prisma.sessions.create({data})
+        console.log(`Login do ${res.userData.nome} realizado com sucesso !`)
+        // await daoLog.desativaOutrosAccess(res.userData.id) // desativando outros tokens
+        res.send({token: res.token, userId: data.userId}).status(200)
     }catch (err) {
         console.error("Erro signUp: ", err)
         return res.status(500).send("Erro no cadastro: ",err)
