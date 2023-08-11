@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model apiCEP {
+  cep    Int    @id(map: "apiCEP_pk") @default(autoincrement())
+  cidade String @db.Char(1)
+  uf     String @db.Char(1)
+}
+
+model categorias {
+  id        Int        @id(map: "categorias_pk") @default(autoincrement())
+  descricao String     @db.VarChar
+  url       String     @db.VarChar
+  servicos  servicos[]
+}
+
+model servicos {
+  id            Int             @id(map: "servicos_pk") @default(autoincrement())
+  nome          Int
+  descricao     String          @db.Char(1)
+  img           String          @db.Char(1)
+  preco         Float
+  userId        Int
+  categoriaId   Int
+  available     Boolean
+  createdAt     DateTime        @db.Timestamp(6)
+  users         users           @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicos_fk0")
+  categorias    categorias      @relation(fields: [categoriaId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicos_fk1")
+  statusServico statusServico[]
+}
+
+model sessions {
+  id        Int      @id(map: "sessions_pk") @default(autoincrement())
+  userId    Int
+  token     String   @unique(map: "public.sessions_token_key") @db.Char(1)
+  createdAt DateTime @db.Timestamp(6)
+  users     users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userFk")
+}
+
+model statusServico {
+  id                                     Int      @id(map: "statusServico_pk") @default(autoincrement())
+  servicoId                              Int
+  clienteId                              Int
+  prestadorId                            Int
+  status                                 String   @db.Char(1)
+  contractedAt                           DateTime @db.Timestamp(6)
+  servicos                               servicos @relation(fields: [servicoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "statusServico_fk0")
+  users_statusServico_clienteIdTousers   users    @relation("statusServico_clienteIdTousers", fields: [clienteId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "statusServico_fk1")
+  users_statusServico_prestadorIdTousers users    @relation("statusServico_prestadorIdTousers", fields: [prestadorId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "statusServico_fk2")
+}
+
+model users {
+  id                                             Int             @id(map: "users_pk") @default(autoincrement())
+  nome                                           String          @db.VarChar
+  email                                          String          @db.VarChar
+  password                                       String          @db.VarChar
+  endereco                                       String          @db.VarChar
+  cep                                            String          @db.VarChar
+  permission                                     Int
+  createdAt                                      DateTime        @db.Timestamp(6)
+  servicos                                       servicos[]
+  sessions                                       sessions[]
+  statusServico_statusServico_clienteIdTousers   statusServico[] @relation("statusServico_clienteIdTousers")
+  statusServico_statusServico_prestadorIdTousers statusServico[] @relation("statusServico_prestadorIdTousers")
+}
