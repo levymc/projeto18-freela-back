@@ -16,12 +16,13 @@ export default class UsuarioService {
           cep: newUserData.cep,
           permission: newUserData.permission,
           createdAt: newUserData.createdAt,
+          numEnd: newUserData.numEnd
         },
       });
       return newUser;
     } catch (error) {
       console.error('Erro ao adicionar usuário:', error);
-      throw error;
+      return false
     }
   }
 

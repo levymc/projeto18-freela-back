@@ -58,12 +58,13 @@ model statusServico {
 model users {
   id                                             Int             @id(map: "users_pk") @default(autoincrement())
   nome                                           String          @db.VarChar
-  email                                          String          @db.VarChar
+  email                                          String          @unique(map: "email") @db.VarChar
   password                                       String          @db.VarChar
   endereco                                       String          @db.VarChar
-  cep                                            String          @db.VarChar
+  cep                                            Decimal         @db.Decimal
   permission                                     Int
   createdAt                                      DateTime        @db.Timestamp(6)
+  numEnd                                         Int
   servicos                                       servicos[]
   sessions                                       sessions[]
   statusServico_statusServico_clienteIdTousers   statusServico[] @relation("statusServico_clienteIdTousers")
