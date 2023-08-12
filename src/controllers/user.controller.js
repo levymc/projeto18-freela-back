@@ -2,6 +2,7 @@ import UsuarioDAO from "../prisma/dao/dao.users.js";
 import { crypt } from "../middlewares/crypt.js";
 import { format, addDays } from 'date-fns';
 import  { PrismaClient } from '@prisma/client';
+import { userLogin } from "../schemas/user.schema.js";
 
 const prisma = new PrismaClient()
 
@@ -68,24 +69,20 @@ export async function signIn(req, res){
 }
 
 
-export const userMe = async (req, res) => {
+export const logOut = async (req, res) => {
     try{
-        const userId = parseInt(res.user.id)
-        console.log(userId)
-        const responseJson = await dao.readUserMe(userId)
-        if (responseJson) return res.status(200).send(responseJson)
+        await prisma.sessions.update({
+            where: {
+                token: res.token
+            },
+            data: {
+                valid: false
+            }
+        })
+        return res.sendStatus(201)
     }catch (err) {
         console.error("Erro addView: ", err)
         return res.status(500).send("Erro no addView: ",err)
     }
 }
 
-export const getRanking = async (req, res) => {
-    try{
-        const resDB = await dao.getRanking()
-        if (resDB) return res.status(200).send(resDB)
-    }catch (err) {
-        console.error("Erro addView: ", err)
-        return res.status(500).send("Erro no addView: ",err)
-    }
-}

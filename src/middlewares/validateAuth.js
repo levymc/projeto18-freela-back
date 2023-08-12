@@ -1,8 +1,7 @@
-// import LogAccessDAO ../prisma/database.connection.jss.js";
-import UsuarioDAO from "../database/dao/dao.users.js";
+import  { PrismaClient } from '@prisma/client';
 
-const daoLog = new LogAccessDAO()
-const dao = new UsuarioDAO()
+const prisma = new PrismaClient()
+
 
 async function validateAuth(req, res, next) {
     const { authorization } = req.headers
@@ -11,13 +10,22 @@ async function validateAuth(req, res, next) {
     if (!token) return res.sendStatus(401)
 
     try {
-        const session = await daoLog.readByToken(token)
+        const session = await prisma.sessions.findUnique({
+            where: {
+                token: token
+            }
+        })
         if (!session) return res.sendStatus(401);
 
-        const user = await dao.readById(session.userId)
+        const user = await prisma.users.findUnique({
+            where: {
+                id: session.userId
+            }
+        })
         if (!user) return res.sendStatus(401);
 
         res.user = user
+        res.token = token
         // console.log("Deu bom!")
         next();
         
