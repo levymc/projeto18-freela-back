@@ -1,10 +1,17 @@
 import axios from 'axios'
 import UsuarioService from './src/prisma/orm/orm.users.js';
 import  { PrismaClient } from '@prisma/client';
+import iconsList from './test.js'
 
 const prisma = new PrismaClient()
 // const url = 'http://localhost:5000/urls/shorten';
 // const token = 'efca96e6-9f3a-4a08-998e-a3bc5023e8b2';
+
+try{
+    await prisma.categoriasServicos.createMany({data: iconsList})
+}catch(err){
+    console.error(err)
+}
 
 // axios.post(url, {
 //   url: 'https://www.youtube.com/',
@@ -18,21 +25,21 @@ const prisma = new PrismaClient()
 // });
 
 
-axios.post('http://localhost:5000/signup', {
-    nome: 'Novo Usuário',
-    email: 'novousuario@example.com',
-    password: 'senha123',
-    confirmPassword: 'senha123',
-    endereco: 'Rua Exemplo',
-    numEnd: 123,
-    cep: '14021160',
-    permission: 1,
-    createdAt: new Date(),
-}).then(res => {
-    console.log(res.data)
-}).catch(err => {
-    console.error(err.response)
-})
+// axios.post('http://localhost:5000/signup', {
+//     nome: 'Novo Usuário',
+//     email: 'novousuario@example.com',
+//     password: 'senha123',
+//     confirmPassword: 'senha123',
+//     endereco: 'Rua Exemplo',
+//     numEnd: 123,
+//     cep: '14021160',
+//     permission: 1,
+//     createdAt: new Date(),
+// }).then(res => {
+//     console.log(res.data)
+// }).catch(err => {
+//     console.error(err.response)
+// })
 
 const usuarioService = new UsuarioService();
 // try {

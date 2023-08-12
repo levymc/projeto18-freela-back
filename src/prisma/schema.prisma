@@ -13,13 +13,6 @@ model apiCEP {
   uf     String @db.Char(1)
 }
 
-model categorias {
-  id        Int        @id(map: "categorias_pk") @default(autoincrement())
-  descricao String     @db.VarChar
-  url       String     @db.VarChar
-  servicos  servicos[]
-}
-
 model cidade {
   id     Int     @id @default(autoincrement())
   nome   String? @db.VarChar(120)
@@ -39,17 +32,16 @@ model estado {
 }
 
 model servicos {
-  id            Int             @id(map: "servicos_pk") @default(autoincrement())
-  nome          Int
-  descricao     String          @db.Char(1)
-  img           String          @db.Char(1)
-  preco         Float
-  userId        Int
+  id            Int                @id(map: "servicos_pk") @default(autoincrement())
+  descricao     String             @db.VarChar
+  img           String?            @db.VarChar
+  preco         Float?
+  userId        Int?
   categoriaId   Int
   available     Boolean
-  createdAt     DateTime        @db.Timestamp(6)
-  users         users           @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicos_fk0")
-  categorias    categorias      @relation(fields: [categoriaId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicos_fk1")
+  createdAt     DateTime           @db.Timestamp(6)
+  users         users?             @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicos_fk0")
+  categorias    categoriasServicos @relation(fields: [categoriaId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicos_fk1")
   statusServico statusServico[]
 }
 
@@ -93,4 +85,11 @@ model users {
   statusServico_statusServico_prestadorIdTousers statusServico[] @relation("statusServico_prestadorIdTousers")
   cidade                                         cidade          @relation(fields: [cidadeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cidadeId FK")
   estado                                         estado          @relation(fields: [estadoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "estadoId FK")
+}
+
+model categoriasServicos {
+  id        Int        @id(map: "categorias_pk") @default(autoincrement())
+  descricao String     @db.VarChar
+  icon      String     @db.VarChar
+  servicos  servicos[]
 }

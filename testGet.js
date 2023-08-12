@@ -1,18 +1,21 @@
 import axios from 'axios'
-import UsuarioService from './src/prisma/orm/orm.users.js';
+import  { PrismaClient } from '@prisma/client';
 
-const orm = new UsuarioService()
+const prisma = new PrismaClient()
 
-try{
-    const user = await orm.prisma.users.findUnique({
-        where: {
-          id: 1,
-        },
-    })
-    console.log(user)
-}catch(err){
-    console.error(err)
-}
+
+prisma.categoriasServicos.findMany({})
+
+// try{
+//     const user = await orm.prisma.users.findUnique({
+//         where: {
+//           id: 1,
+//         },
+//     })
+//     console.log(user)
+// }catch(err){
+//     console.error(err)
+// }
 
 // axios.get('http://localhost:5000/urls/open/uUV80_puirvm8Q2QV4WT0').then(res => {
 //     console.log(res.data)
