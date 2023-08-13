@@ -5,7 +5,7 @@ import { signUp, signIn, logOut, getPrestadores } from "../controllers/user.cont
 import {  validateUserPass } from "../middlewares/userValidates.js";
 import generateToken from "../middlewares/generateToken.js";
 import validateAuth from "../middlewares/validateAuth.js";
-import { getCategorias, getServicesByCategoryId } from "../controllers/services.controller.js";
+import { getCategorias, getServicesByCategoryId, solicitarServico} from "../controllers/services.controller.js";
 
 const router = Router();
 
@@ -15,7 +15,8 @@ router.post('/logout', validateAuth, logOut)
 
 router.get('/categorias',  getCategorias)
 router.get('/categoria/:id', validateAuth, getServicesByCategoryId)
-router.get('/prestadores', getPrestadores)
+router.get('/prestadores', validateAuth, getPrestadores)
+router.post('/solicitarServico', validateAuth, solicitarServico)
 // router.get('/users/me', validateAuth, userMe)
 
 

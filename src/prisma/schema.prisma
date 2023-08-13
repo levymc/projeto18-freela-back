@@ -67,39 +67,49 @@ model statusServico {
 }
 
 model users {
-  id                                             Int             @id(map: "users_pk") @default(autoincrement())
-  nome                                           String          @db.VarChar
-  email                                          String          @unique(map: "email") @db.VarChar
-  password                                       String          @db.VarChar
-  endereco                                       String          @db.VarChar
-  cep                                            Decimal         @db.Decimal
+  id                                             Int                @id(map: "users_pk") @default(autoincrement())
+  nome                                           String             @db.VarChar
+  email                                          String             @unique(map: "email") @db.VarChar
+  password                                       String             @db.VarChar
+  endereco                                       String             @db.VarChar
+  cep                                            Decimal            @db.Decimal
   permission                                     Int
-  createdAt                                      DateTime        @db.Timestamp(6)
+  createdAt                                      DateTime           @db.Timestamp(6)
   numEnd                                         Int
-  bairro                                         String?         @db.VarChar
+  bairro                                         String?            @db.VarChar
   cidadeId                                       Int
   estadoId                                       Int
-  prestadores                                    prestadores[]
+  prestadorServico                               prestadorServico[]
   servicos                                       servicos[]
   sessions                                       sessions[]
-  statusServico_statusServico_clienteIdTousers   statusServico[] @relation("statusServico_clienteIdTousers")
-  statusServico_statusServico_prestadorIdTousers statusServico[] @relation("statusServico_prestadorIdTousers")
-  cidade                                         cidade          @relation(fields: [cidadeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cidadeId FK")
-  estado                                         estado          @relation(fields: [estadoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "estadoId FK")
+  statusServico_statusServico_clienteIdTousers   statusServico[]    @relation("statusServico_clienteIdTousers")
+  statusServico_statusServico_prestadorIdTousers statusServico[]    @relation("statusServico_prestadorIdTousers")
+  cidade                                         cidade             @relation(fields: [cidadeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cidadeId FK")
+  estado                                         estado             @relation(fields: [estadoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "estadoId FK")
 }
 
 model categoriasServicos {
-  id          Int           @id(map: "categorias_pk") @default(autoincrement())
-  descricao   String        @db.VarChar
-  icon        String        @db.VarChar
-  prestadores prestadores[]
-  servicos    servicos[]
+  id               Int                @id(map: "categorias_pk") @default(autoincrement())
+  descricao        String             @db.VarChar
+  icon             String             @db.VarChar
+  prestadorServico prestadorServico[]
+  servicos         servicos[]
 }
 
-model prestadores {
-  id                 Int                @id @default(autoincrement())
+model prestadorServico {
+  id                 Int                @id(map: "prestadores_pkey") @default(autoincrement())
   userId             Int
   categoriaId        Int
+  precoMin           Int?
+  precoMax           Int?
   categoriasServicos categoriasServicos @relation(fields: [categoriaId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "categoriaFk")
   users              users              @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userFK")
+}
+
+model servicoSolicitado {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  categoriaId   Int
+  solicitanteId Int
+  prestadorId   Int
 }

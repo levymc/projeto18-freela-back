@@ -107,23 +107,32 @@ export const logOut = async (req, res) => {
 
 
 export const getPrestadores = async (req, res) => {
+
     try{
         const categoriaId = parseInt(req.headers.categoriaid)
-        const prestadoresByCategoryId = await prisma.prestadores.findMany({ 
+        const prestadoresByCategoryId = await prisma.prestadorServico.findMany({ 
             where: {
                 categoriaId: categoriaId
             }
         })
         let arrayPrestadores = []
         for (const prestador of prestadoresByCategoryId) {
+            const i = prestadoresByCategoryId.indexOf(prestador)
+
             const userPrestador = await prisma.users.findUnique({
                 where: {
-                    id: prestador.id
+                    id: prestador.userId
                 }
             });
-            arrayPrestadores.push({id: userPrestador.id, email: userPrestador.email, nome: userPrestador.nome});
+            console.log(userPrestador)
+            arrayPrestadores.push({
+                id: userPrestador.id, 
+                email: userPrestador.email, 
+                nome: userPrestador.nome,
+                precoMin: prestadoresByCategoryId[i].precoMin,
+                precoMax: prestadoresByCategoryId[i].precoMax
+            })
         }
-        // console.log(categoriaId ,arrayPrestadores)
         return res.status(201).send(arrayPrestadores)
     }catch (err) {
         console.error("Erro addView: ", err)
