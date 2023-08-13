@@ -13,6 +13,8 @@ export const userSchema = Joi.object({
     bairro: Joi.string().required(),
     cidade: Joi.string().required(),
     estado: Joi.string().required(),
+    permission: Joi.number().required(),
+    servico: Joi.string()
 });
   
 export const userLogin = Joi.object({

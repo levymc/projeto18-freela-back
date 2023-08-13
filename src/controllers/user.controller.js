@@ -37,12 +37,28 @@ export async function signUp(req, res){
             bairro: req.body.bairro,
             cidadeId: cidade.id,
             estadoId: estado.id,
+            permission: req.body.permission,
         }  
-        const dataRes = await prisma.users.create({data})
+        console.log(data)
+        const insertedUser = await prisma.users.create({data})
+        const categoriaEncontrada = await prisma.categoriasServicos.findFirst({
+            where: {
+                descricao: {
+                    contains: req.body.servico
+                }
+            }
+        });
+        const insertedPrestador = await prisma.prestadores.create({
+            data:{
+                userId: insertedUser.id,
+                categoriaId: categoriaEncontrada.id
+            }
+        })
 
         console.log(`Cadastro do ${req.body.nome} realizado com sucesso !`)
-        if (!dataRes) return res.status(404).send("Ocorreu algum erro no cadastro.")
-        res.status(201).send(dataRes)
+        if (!insertedUser || !insertedPrestador) return res.status(404).send("Ocorreu algum erro no cadastro.")
+        const response = insertedPrestador ? {insertedUser, insertedPrestador} : insertedUser
+        res.status(201).send(response)
     }catch (err) {
         console.error("Erro signUp: ", err)
         return res.status(500).send("Erro no cadastro: ",err)
