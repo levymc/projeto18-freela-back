@@ -1,7 +1,7 @@
 import { Router } from "express";
 import validateSchema from "../middlewares/validateSchema.js";
 import { userSchema, userLogin } from "../schemas/user.schema.js";
-import { signUp, signIn, logOut } from "../controllers/user.controller.js";
+import { signUp, signIn, logOut, getPrestadores } from "../controllers/user.controller.js";
 import {  validateUserPass } from "../middlewares/userValidates.js";
 import generateToken from "../middlewares/generateToken.js";
 import validateAuth from "../middlewares/validateAuth.js";
@@ -13,8 +13,9 @@ router.post('/signup', (req, res, next) => validateSchema(req, res, next, userSc
 router.post('/signin', (req, res, next) => validateSchema(req, res, next, userLogin), validateUserPass, generateToken, signIn)
 router.post('/logout', validateAuth, logOut)
 
-router.get('/categorias', getCategorias)
-router.get('/categoria/:id', getServicesByCategoryId)
+router.get('/categorias',  getCategorias)
+router.get('/categoria/:id', validateAuth, getServicesByCategoryId)
+router.get('/prestadores', getPrestadores)
 // router.get('/users/me', validateAuth, userMe)
 
 

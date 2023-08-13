@@ -1,64 +1,26 @@
+import  { PrismaClient } from '@prisma/client';
+import { faker } from '@faker-js/faker';
+const prisma = new PrismaClient();
 
+const categoriaIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; // IDs das categorias de 1 a 14
 
-const iconsList = [
-{
-    icon: `<CarOutline height="0.8em" width="0.8em" />`,
-    descricao: "Automotivo",
-},
-{
-    icon: `<IoAirplaneOutline height="0.8em" width="0.8em" />`,
-    descricao: "Viagens",
-},
-{
-    icon: `<BusOutline height="0.8em" width="0.8em" />`,
-    descricao: "Transporte",
-}, 
-{
-    icon: `<LaptopOutline height="0.8em" width="0.8em" />`,
-    descricao: "Tecnologia",
-}, 
-{
-    icon: `<FlaskOutline height="0.8em" width="0.8em" />`,
-    descricao: "Laboratorial",
-}, 
-{
-    icon: `<PawOutline height="0.8em" width="0.8em" />`,
-    descricao: "Pet",
-}, 
-{
-    icon: `<PiPottedPlantThin height="0.8em" width="0.8em" />`,
-    descricao: "Jardinagem",
-},
-{
-    icon: `<BookOutline height="0.8em" width="0.8em" />`,
-    descricao: "Educação",
-}, 
-{
-    icon: `<KeyOutline height="0.8em" width="0.8em" />`,
-    descricao: "Chaveiro",
-}, 
-{
-    icon: `<ConstructOutline height="0.8em" width="0.8em" />`,
-    descricao: "Serviços Domésticos",
-},
-{
-    icon: `<RestaurantOutline height="0.8em" width="0.8em" />`,
-    descricao: "Alimentação",
-},
-{
-    icon: `<FitnessOutline height="0.8em" width="0.8em" />`,
-    descricao: "Saúde",
-}, 
-{
-    icon: `<LiaBabyCarriageSolid height="0.8em" width="0.8em" />`,
-    descricao: "Cuidados especiais",
-},
-{
-    icon: `<GiHandSaw height="0.8em" width="0.8em" />`,
-    descricao: "Marcenaria",
-},
-];
+async function relateUsersToCategories() {
+    const totalUsers = 30;
+    
+    for (let userId = 1; userId <= totalUsers; userId++) {
+        const categoriaId = categoriaIds[(userId - 1) % categoriaIds.length]; // Distribui os IDs de categoria de forma circular
+        
+        await prisma.prestadores.create({
+            data: {
+                userId,
+                categoriaId
+            }
+        });
+    }
+}
 
-
-
-export default iconsList.sort((a, b) => a.descricao.localeCompare(b.descricao));
+(async () => {
+    await relateUsersToCategories();
+    console.log(`Usuários relacionados com categorias.`);
+    await prisma.$disconnect();
+})();

@@ -41,19 +41,22 @@ export async function signUp(req, res){
         }  
         console.log(data)
         const insertedUser = await prisma.users.create({data})
-        const categoriaEncontrada = await prisma.categoriasServicos.findFirst({
+        const categoriaEncontrada = await prisma.categoriasServicos.findUnique({
             where: {
                 descricao: {
                     contains: req.body.servico
                 }
             }
-        });
-        const insertedPrestador = await prisma.prestadores.create({
-            data:{
-                userId: insertedUser.id,
-                categoriaId: categoriaEncontrada.id
-            }
         })
+        const insertedPrestador = null
+        if (req.body.servico != "") {
+            insertedPrestador = await prisma.prestadores.create({
+                    data:{
+                        userId: insertedUser.id,
+                        categoriaId: categoriaEncontrada.id
+                    }
+                })
+            }
 
         console.log(`Cadastro do ${req.body.nome} realizado com sucesso !`)
         if (!insertedUser || !insertedPrestador) return res.status(404).send("Ocorreu algum erro no cadastro.")
@@ -102,3 +105,28 @@ export const logOut = async (req, res) => {
     }
 }
 
+
+export const getPrestadores = async (req, res) => {
+    try{
+        const categoriaId = parseInt(req.headers.categoriaid)
+        const prestadoresByCategoryId = await prisma.prestadores.findMany({ 
+            where: {
+                categoriaId: categoriaId
+            }
+        })
+        let arrayPrestadores = []
+        for (const prestador of prestadoresByCategoryId) {
+            const userPrestador = await prisma.users.findUnique({
+                where: {
+                    id: prestador.id
+                }
+            });
+            arrayPrestadores.push({id: userPrestador.id, email: userPrestador.email, nome: userPrestador.nome});
+        }
+        // console.log(categoriaId ,arrayPrestadores)
+        return res.status(201).send(arrayPrestadores)
+    }catch (err) {
+        console.error("Erro addView: ", err)
+        return res.status(500).send("Erro no addView: ",err)
+    }
+}

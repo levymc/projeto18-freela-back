@@ -14,7 +14,7 @@ export const userSchema = Joi.object({
     cidade: Joi.string().required(),
     estado: Joi.string().required(),
     permission: Joi.number().required(),
-    servico: Joi.string()
+    servico: Joi.string().allow('')
 });
   
 export const userLogin = Joi.object({
