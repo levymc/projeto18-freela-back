@@ -24,7 +24,7 @@ export async function signUp(req, res){
             return res.status(404).send("Cidade ou estado não encontrados ");
         }
 
-        const data = {
+        let data = {
             nome: req.body.nome,
             email: req.body.email,
             password: crypt(req.body.password),
@@ -39,17 +39,15 @@ export async function signUp(req, res){
             permission: req.body.permission,
         }  
         console.log(data)
-        const insertedUser = await prisma.users.create({data})
-        const categoriaEncontrada = await prisma.categoriasServicos.findUnique({
+        let insertedUser = await prisma.users.create({data})
+        let categoriaEncontrada = await prisma.categoriasServicos.findUnique({
             where: {
-                descricao: {
-                    contains: req.body.servico
-                }
+                id: parseInt(req.body.servico)
             }
         })
-        const insertedPrestador = null
+        let insertedPrestador = null
         if (req.body.servico != "") {
-            insertedPrestador = await prisma.prestadores.create({
+            insertedPrestador = await prisma.prestadorServico.create({
                     data:{
                         userId: insertedUser.id,
                         categoriaId: categoriaEncontrada.id
@@ -59,7 +57,7 @@ export async function signUp(req, res){
 
         console.log(`Cadastro do ${req.body.nome} realizado com sucesso !`)
         if (!insertedUser || !insertedPrestador) return res.status(404).send("Ocorreu algum erro no cadastro.")
-        const response = insertedPrestador ? {insertedUser, insertedPrestador} : insertedUser
+        let response = insertedPrestador ? {insertedUser, insertedPrestador} : insertedUser
         res.status(201).send(response)
     }catch (err) {
         console.error("Erro signUp: ", err)
