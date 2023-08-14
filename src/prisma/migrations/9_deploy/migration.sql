@@ -1,6 +1,4 @@
-Need to install the following packages:
-  prisma@5.1.1
-Ok to proceed? (y) -- CreateTable
+-- CreateTable
 CREATE TABLE "apiCEP" (
     "cep" SERIAL NOT NULL,
     "cidade" CHAR(1) NOT NULL,
