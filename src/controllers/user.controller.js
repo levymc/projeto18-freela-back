@@ -3,6 +3,7 @@ import { crypt } from "../middlewares/crypt.js";
 import { format, addDays } from 'date-fns';
 import  { PrismaClient } from '@prisma/client';
 import { userLogin } from "../schemas/user.schema.js";
+import formatTimestamp from "../middlewares/formatTimeStamp.js";
 
 const prisma = new PrismaClient()
 
@@ -113,6 +114,29 @@ export const getUser = async (req, res) => {
             estado: res.estado
         }
         return res.status(200).send(data)
+    }catch (err) {
+        console.error("Erro addView: ", err)
+        return res.status(500).send("Erro no addView: ",err)
+    }
+}
+
+export const editPerfil = async (req, res) => {
+    try{
+        console.log(req.body)
+        const updatedUser = await prisma.users.update({
+            where: {
+                id: req.body.id
+            },
+            data: {
+                nome: req.body.nome,
+                email: req.body.email,
+                permission: req.body.permission,
+                endereco: req.body.endereco,
+                numEnd: req.body.numEnd,
+                createdAt: new Date().toISOString()
+            }
+        })
+        return res.status(204).send(updatedUser)
     }catch (err) {
         console.error("Erro addView: ", err)
         return res.status(500).send("Erro no addView: ",err)
