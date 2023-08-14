@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "apiCEP" (
+CREATE TABLE IF NOT EXISTS "apiCEP" (
     "cep" SERIAL NOT NULL,
     "cidade" CHAR(1) NOT NULL,
     "uf" CHAR(1) NOT NULL,
@@ -8,8 +8,8 @@ CREATE TABLE "apiCEP" (
 );
 
 -- CreateTable
-CREATE TABLE "cidade" (
-    "id" BIGSERIAL NOT NULL,
+CREATE TABLE IF NOT EXISTS "cidade" (
+    "id" SERIAL NOT NULL,
     "nome" VARCHAR(120),
     "uf" INTEGER,
 
@@ -17,19 +17,17 @@ CREATE TABLE "cidade" (
 );
 
 -- CreateTable
-CREATE TABLE "estado" (
-    "id" BIGSERIAL NOT NULL,
+CREATE TABLE IF NOT EXISTS "estado" (
+    "id" SERIAL NOT NULL,
     "nome" VARCHAR(60),
     "uf" VARCHAR(2),
-    "ibge" INTEGER,
-    "pais" INTEGER,
     "ddd" JSON,
 
     CONSTRAINT "estado_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "servicos" (
+CREATE TABLE IF NOT EXISTS "servicos" (
     "id" SERIAL NOT NULL,
     "descricao" VARCHAR NOT NULL,
     "img" VARCHAR,
@@ -43,7 +41,7 @@ CREATE TABLE "servicos" (
 );
 
 -- CreateTable
-CREATE TABLE "sessions" (
+CREATE TABLE IF NOT EXISTS "sessions" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "token" VARCHAR NOT NULL,
@@ -54,7 +52,7 @@ CREATE TABLE "sessions" (
 );
 
 -- CreateTable
-CREATE TABLE "statusServico" (
+CREATE TABLE IF NOT EXISTS "statusServico" (
     "id" SERIAL NOT NULL,
     "servicoId" INTEGER NOT NULL,
     "clienteId" INTEGER NOT NULL,
@@ -66,7 +64,7 @@ CREATE TABLE "statusServico" (
 );
 
 -- CreateTable
-CREATE TABLE "users" (
+CREATE TABLE IF NOT EXISTS "users" (
     "id" SERIAL NOT NULL,
     "nome" VARCHAR NOT NULL,
     "email" VARCHAR NOT NULL,
@@ -84,7 +82,7 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
-CREATE TABLE "categoriasServicos" (
+CREATE TABLE IF NOT EXISTS "categoriasServicos" (
     "id" SERIAL NOT NULL,
     "descricao" VARCHAR NOT NULL,
     "icon" VARCHAR NOT NULL,
@@ -93,7 +91,7 @@ CREATE TABLE "categoriasServicos" (
 );
 
 -- CreateTable
-CREATE TABLE "prestadorServico" (
+CREATE TABLE IF NOT EXISTS "prestadorServico" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "categoriaId" INTEGER NOT NULL,
@@ -104,7 +102,7 @@ CREATE TABLE "prestadorServico" (
 );
 
 -- CreateTable
-CREATE TABLE "servicoSolicitado" (
+CREATE TABLE IF NOT EXISTS "servicoSolicitado" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "categoriaId" INTEGER NOT NULL,
@@ -116,10 +114,13 @@ CREATE TABLE "servicoSolicitado" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "public.sessions_token_key" ON "sessions"("token");
+CREATE UNIQUE INDEX IF NOT EXISTS "public.sessions_token_key" ON "sessions"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "email" ON "users"("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "email" ON "users"("email");
+
+-- AddForeignKey
+ALTER TABLE "cidade" ADD CONSTRAINT "ufFk" FOREIGN KEY ("uf") REFERENCES "estado"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "servicos" ADD CONSTRAINT "servicos_fk0" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -140,8 +141,13 @@ ALTER TABLE "statusServico" ADD CONSTRAINT "statusServico_fk1" FOREIGN KEY ("cli
 ALTER TABLE "statusServico" ADD CONSTRAINT "statusServico_fk2" FOREIGN KEY ("prestadorId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "cidadeId FK" FOREIGN KEY ("cidadeId") REFERENCES "cidade"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "estadoId FK" FOREIGN KEY ("estadoId") REFERENCES "estado"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
 ALTER TABLE "prestadorServico" ADD CONSTRAINT "categoriaFk" FOREIGN KEY ("categoriaId") REFERENCES "categoriasServicos"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "prestadorServico" ADD CONSTRAINT "userFK" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
