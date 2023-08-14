@@ -14,19 +14,21 @@ model apiCEP {
 }
 
 model cidade {
-  id   BigInt  @id @default(autoincrement())
-  nome String? @db.VarChar(120)
-  uf   Int?
+  id     Int     @id @default(autoincrement())
+  nome   String? @db.VarChar(120)
+  uf     Int?
+  estado estado? @relation(fields: [uf], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ufFk")
+  users  users[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model estado {
-  id   BigInt  @id @default(autoincrement())
-  nome String? @db.VarChar(60)
-  uf   String? @db.VarChar(2)
-  ibge Int?
-  pais Int?
-  ddd  Json?   @db.Json
+  id     Int      @id @default(autoincrement())
+  nome   String?  @db.VarChar(60)
+  uf     String?  @db.VarChar(2)
+  ddd    Json?    @db.Json
+  cidade cidade[]
+  users  users[]
 }
 
 model servicos {
@@ -82,6 +84,8 @@ model users {
   sessions                                       sessions[]
   statusServico_statusServico_clienteIdTousers   statusServico[]    @relation("statusServico_clienteIdTousers")
   statusServico_statusServico_prestadorIdTousers statusServico[]    @relation("statusServico_prestadorIdTousers")
+  cidade                                         cidade             @relation(fields: [cidadeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cidadeId FK")
+  estado                                         estado             @relation(fields: [estadoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "estadoId FK")
 }
 
 model categoriasServicos {
