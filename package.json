@@ -5,9 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "prisma-generate": "npx prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/app.js",
-    "start": "node ./src/app.js"
+    "start": "npm run prisma-generate && node ./src/app.js"
   },
   "keywords": [],
   "author": "",
