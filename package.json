@@ -5,9 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "prisma-generate": "npx prisma generate",
+    "prisma-generate": "npx prisma generate --schema=./src/prisma/schema.prisma ",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/app.js",
+    "build": "npx prisma migrate deploy && npm run prisma-generate",
     "start": "npm run prisma-generate && node ./src/app.js"
   },
   "keywords": [],
