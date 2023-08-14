@@ -1,4 +1,3 @@
-import UsuarioDAO from "../prisma/dao/dao.users.js";
 import { crypt } from "../middlewares/crypt.js";
 import { format, addDays } from 'date-fns';
 import  { PrismaClient } from '@prisma/client';
@@ -7,7 +6,6 @@ import formatTimestamp from "../middlewares/formatTimeStamp.js";
 
 const prisma = new PrismaClient()
 
-const dao = new UsuarioDAO()
 
 export async function signUp(req, res){
     try{              
@@ -80,7 +78,6 @@ export async function signIn(req, res){
     try{
         const dataRes = await prisma.sessions.create({data})
         console.log(`Login do ${res.userData.nome} realizado com sucesso !`)
-        // await daoLog.desativaOutrosAccess(res.userData.id) // desativando outros tokens
         res.send({token: res.token, userId: data.userId}).status(200)
     }catch (err) {
         console.error("Erro signUp: ", err)
