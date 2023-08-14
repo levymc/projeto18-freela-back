@@ -34,8 +34,8 @@ export async function signUp(req, res){
             createdAt: new Date(),
             numEnd: parseInt(req.body.numEnd),
             bairro: req.body.bairro,
-            cidadeId: cidade.id,
-            estadoId: estado.id,
+            cidadeId: parseInt(cidade.id),
+            estadoId: parseInt(estado.id),
             permission: req.body.permission,
         }  
         console.log(data)
