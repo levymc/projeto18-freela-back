@@ -40,13 +40,31 @@ export async function solicitarServico(req, res){
             data:{
                 solicitanteId: parseInt(res.user.id),
                 categoriaId: parseInt(req.body.categoriaId),
-                prestadorId: parseInt(req.body.prestadorId)
+                prestadorId: parseInt(req.body.prestadorId),
+                active: true,
             }
         })
         console.log(insertedService)
         res.status(201).send(insertedService)
     }catch (err) {
-        console.error("Erro getServicesByCategoryId: ", err)
-        return res.status(500).send("Erro no getServicesByCategoryId: ",err)
+        console.error("Erro solicitarServico: ", err)
+        return res.status(500).send("Erro no solicitarServico: ",err)
+    }
+}
+
+export async function cancelarSolicitacao(req, res){
+    try{
+        const canceledService = await prisma.servicoSolicitado.update({
+            where: {
+                id: req.body.data.id
+            },
+            data: {
+                active: false
+            }
+        })
+        res.status(202).send(canceledService)
+    }catch (err) {
+        console.error("Erro solicitarServico: ", err)
+        return res.status(500).send("Erro no solicitarServico: ",err)
     }
 }

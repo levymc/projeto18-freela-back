@@ -105,6 +105,20 @@ export const logOut = async (req, res) => {
     }
 }
 
+export const getUser = async (req, res) => {
+    try{
+        const data = {
+            userData: res.user,
+            cidade: res.cidade,
+            estado: res.estado
+        }
+        return res.status(200).send(data)
+    }catch (err) {
+        console.error("Erro addView: ", err)
+        return res.status(500).send("Erro no addView: ",err)
+    }
+}
+
 
 export const getPrestadores = async (req, res) => {
 

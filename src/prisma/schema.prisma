@@ -112,4 +112,5 @@ model servicoSolicitado {
   categoriaId   Int
   solicitanteId Int
   prestadorId   Int
+  active        Boolean  @default(true)
 }
